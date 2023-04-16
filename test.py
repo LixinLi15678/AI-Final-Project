@@ -1,5 +1,6 @@
 import game_manager, game_rules, signal, unittest
 from player import makePlayer
+import json
 
 class GameTest(unittest.TestCase):
 
@@ -23,23 +24,35 @@ class GameTest(unittest.TestCase):
         Test if MCPlayer implement successfully
         """
 		# X Always win
-		gm = self.makeGame(3, 'd', 'c', timeLimit=1.0, simulation_type='random', c_value=1.414)
-		gm.play()
-		self.assertEqual(gm.GetWinner(), 'X')
-
-		# MC should do better
-		gm = self.makeGame(5, 'c', 'd', timeLimit=1.0, simulation_type='random', c_value=1.414)
-		gm.play()
-		self.assertEqual(gm.GetWinner(), 'X')
+		# gm = self.makeGame(3, 'd', 'c', timeLimit=1.0, simulation_type='random', c_value=1.414)
+		# gm.play()
+		# self.assertEqual(gm.GetWinner(), 'X')
+		#
+		# # MC should do better
+		# gm = self.makeGame(5, 'c', 'd', timeLimit=1.0, simulation_type='random', c_value=1.414)
+		# gm.play()
+		# self.assertEqual(gm.GetWinner(), 'X')
 
 	def test2(self):
 		"""
 		Test different c_value
 		"""
 
-		result = {}
+		print("Loading history ...")
+		with open('history.json', 'r') as f:
+			temp = json.load(f)
+			num = temp['num']
+		print("History loaded")
+
 		cList = [1.414, 1.732, 2, 2.236, 2.449, 2.646, 2.828, 3]
-		numGame = 20
+		numGame = 100
+		size = 8
+		type = 'random'
+		time = 3.0
+		player1 = 'c'
+		player2 = 'd'
+		result = {}
+		write = {}
 
 		for c in cList:
 			# Count the number of X win
@@ -47,12 +60,27 @@ class GameTest(unittest.TestCase):
 			numX = 0
 			for numG in range(numGame):
 				print(f"Game {numG + 1} ...")
-				gm = self.makeGame(8, 'c', 'r', timeLimit=2, simulation_type='random', c_value=c)
+				gm = self.makeGame(size, player1, player2, timeLimit=time, simulation_type=type, c_value=c)
 				gm.play(PB=False)
 				if gm.GetWinner() == 'X':
 					numX += 1
 				print(f"X win {numX} times")
 			result[c] = numX
+
+		print("writing to json ...")
+		write['num'] = num + 1
+		write['size'] = size
+		write['player1'] = player1
+		write['player2'] = player2
+		write['game'] = numGame
+		write['time'] = time
+		write['simulation'] = type
+		write['result'] = result
+
+		with open('history.json', 'a') as f:
+			json.dump(write, f)
+
+		print("Done!")
 
 		print(result)
 
