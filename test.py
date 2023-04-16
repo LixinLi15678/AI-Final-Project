@@ -49,7 +49,7 @@ class GameTest(unittest.TestCase):
 		print("History loaded")
 
 		cList = [1.414, 1.732, 2, 2.236, 2.449, 2.646, math.e, 2.828, 3, math.pi]
-		numGame = 5
+		numGame = 100
 		size = 8
 		type = 'random'
 		time = 2.0
