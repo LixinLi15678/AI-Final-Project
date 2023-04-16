@@ -42,7 +42,9 @@ class GameTest(unittest.TestCase):
 
 		print("Loading history ...")
 		with open('history.json', 'r') as f:
-			temp = json.load(f)
+			# read the last line
+			lines = f.readlines()
+			temp = json.loads(lines[-1])
 			num = temp['num']
 		print("History loaded")
 
