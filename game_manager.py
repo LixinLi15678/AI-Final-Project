@@ -31,15 +31,15 @@ class GameManager:
         self.log.close()
         sys.exit(1)
 
-    def play(self):
+    def play(self, PB=True):
         while self.state is not X_VICTORY and self.state is not O_VICTORY:
             if self.moves:
                 move = self.moves.pop(0)
                 print('playing scripted move', move)
-                self._takeTurn(move)
+                self._takeTurn(move, PB)
             else:
-                self._takeTurn()
-            if self.verbose: game_rules.printBoard(self.board)
+                self._takeTurn(PB=PB)
+            if self.verbose and PB: game_rules.printBoard(self.board)
         self.log.close()
 
     def GetTurn(self):
@@ -51,7 +51,7 @@ class GameManager:
         if self.state < 3: return None
         return 'X' if self.state == X_VICTORY else 'O'
 
-    def _takeTurn(self, move_pair=None):
+    def _takeTurn(self, move_pair=None, PB=True):
         playerBoard = deepcopy(self.board)
         old = self.state
 
@@ -60,17 +60,19 @@ class GameManager:
             if self.state == O_TURN: self.state = X_VICTORY
             return
 
-        if self.state   == AWAITING_INITIAL_X: self._handleInitialX(playerBoard, self.board, move_pair)
+        if self.state   == AWAITING_INITIAL_X: self._handleInitialX(playerBoard, self.board, move_pair, PB)
         elif self.state == AWAITING_INITIAL_O: self._handleInitialO(playerBoard, self.board, move_pair)
         elif self.state == X_TURN: self._handleTurnX(playerBoard, self.board, move_pair)
         elif self.state == O_TURN: self._handleTurnO(playerBoard, self.board, move_pair)
         if self.state != old: self.turn_number += 1
 
-    def _handleInitialX(self, playerBoard, board, move_pair):
+    def _handleInitialX(self, playerBoard, board, move_pair, PB=True):
         #move = move_pair[0] if isinstance(self.p1, HumanPlayer) else self.p1.selectInitialX(playerBoard)
-        print('initial X, move_pair', move_pair)
+        if PB:
+            print('initial X, move_pair', move_pair)
         move = move_pair[0] if move_pair is not None else self.p1.selectInitialX(playerBoard)
-        print('move', move)
+        if PB:
+            print('move', move)
         if move in game_rules.getFirstMovesForX(board):
             self.log.write(str(move)+'\n')
             self.board[move[0]][move[1]] = " "
