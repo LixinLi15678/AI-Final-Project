@@ -1,3 +1,5 @@
+import math
+
 import game_manager, game_rules, signal, unittest
 from player import makePlayer
 import json
@@ -44,13 +46,13 @@ class GameTest(unittest.TestCase):
 			num = temp['num']
 		print("History loaded")
 
-		cList = [1.414, 1.732, 2, 2.236, 2.449, 2.646, 2.828, 3]
-		numGame = 100
+		cList = [1.414, 1.732, 2, 2.236, 2.449, 2.646, math.e, 2.828, 3, math.pi]
+		numGame = 5
 		size = 8
 		type = 'random'
-		time = 3.0
+		time = 2.0
 		player1 = 'c'
-		player2 = 'd'
+		player2 = 'r'
 		result = {}
 		write = {}
 
@@ -65,7 +67,7 @@ class GameTest(unittest.TestCase):
 				if gm.GetWinner() == 'X':
 					numX += 1
 				print(f"X win {numX} times")
-			result[c] = numX
+			result[round(c, 3)] = numX
 
 		print("writing to json ...")
 		write['num'] = num + 1
@@ -78,6 +80,8 @@ class GameTest(unittest.TestCase):
 		write['result'] = result
 
 		with open('history.json', 'a') as f:
+			# write to new line
+			f.write('\n')
 			json.dump(write, f)
 
 		print("Done!")
