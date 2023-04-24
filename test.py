@@ -5,14 +5,12 @@ from player import makePlayer
 import json
 
 class GameTest(unittest.TestCase):
-
-
-	def makeGame(self, size, player1, player2, depth=3, timeLimit=2.0, simulation_type='random', c_value=1.414, script=None):
+	def makeGame(self, size, player1, player2, depth=3, timeLimit=2.0, simulation_type='random', c_value=1.414, script=None, pt=False):
 		gm = game_manager.GameManager(
 		      size
 		    , size
-		    , makePlayer(player1, 'x', depth, timeLimit, c_value, simulation_type)
-		    , makePlayer(player2, 'o', depth, timeLimit, c_value, simulation_type)
+		    , makePlayer(player1, 'x', depth, timeLimit, c_value, simulation_type, pt)
+		    , makePlayer(player2, 'o', depth, timeLimit, c_value, simulation_type, pt)
 		    , script
 		    , True)
 		signal.signal(signal.SIGABRT, gm.interrupt)
@@ -26,14 +24,14 @@ class GameTest(unittest.TestCase):
         Test if MCPlayer implement successfully
         """
 		# X Always win
-		# gm = self.makeGame(3, 'd', 'c', timeLimit=1.0, simulation_type='random', c_value=1.414)
-		# gm.play()
-		# self.assertEqual(gm.GetWinner(), 'X')
-		#
-		# # MC should do better
-		# gm = self.makeGame(5, 'c', 'd', timeLimit=1.0, simulation_type='random', c_value=1.414)
-		# gm.play()
-		# self.assertEqual(gm.GetWinner(), 'X')
+		gm = self.makeGame(3, 'd', 'c', timeLimit=1.0, simulation_type='random', c_value=1.414)
+		gm.play()
+		self.assertEqual(gm.GetWinner(), 'X')
+
+		# MC should do better
+		gm = self.makeGame(5, 'c', 'd', timeLimit=1.0, simulation_type='random', c_value=1.414)
+		gm.play()
+		self.assertEqual(gm.GetWinner(), 'X')
 
 	def test2(self):
 		"""
@@ -49,14 +47,15 @@ class GameTest(unittest.TestCase):
 		print("History loaded")
 
 		cList = [1.414, 1.732, 2, 2.236, 2.449, 2.646, math.e, 2.828, 3, math.pi]
-		numGame = 100
+		numGame = 1
 		size = 8
 		type = 'random'
-		time = 2.0
+		time = 5.0
 		player1 = 'c'
 		player2 = 'r'
 		result = {}
 		write = {}
+		depth = 10
 
 		for c in cList:
 			# Count the number of X win
@@ -64,7 +63,7 @@ class GameTest(unittest.TestCase):
 			numX = 0
 			for numG in range(numGame):
 				print(f"Game {numG + 1} ...")
-				gm = self.makeGame(size, player1, player2, timeLimit=time, simulation_type=type, c_value=c)
+				gm = self.makeGame(size, player1, player2, timeLimit=time, simulation_type=type, c_value=c, pt=True, depth=depth)
 				gm.play(PB=False)
 				if gm.GetWinner() == 'X':
 					numX += 1
@@ -78,6 +77,7 @@ class GameTest(unittest.TestCase):
 		write['player2'] = player2
 		write['game'] = numGame
 		write['time'] = time
+		write['depth'] = depth
 		write['simulation'] = type
 		write['result'] = result
 
@@ -87,9 +87,27 @@ class GameTest(unittest.TestCase):
 			json.dump(write, f)
 
 		print("Done!")
-
 		print(result)
 
+	# def test3(self):
+	# 	# This test is test the performance between simulation type
+	# 	num1 = 0
+	# 	num2 = 0
+	# 	for numG in range(10):
+	# 		print(f"Game {numG + 1} ...")
+	# 		gm = self.makeGame(8, 'c', 'r', timeLimit=3.0, simulation_type="heuristic", c_value=math.e, depth=5)
+	# 		gm.play(PB=False)
+	# 		if gm.GetWinner() == 'X':
+	# 			num1 += 1
+	# 	print(f"X win {num1} times, for heuristic simulation")
+	#
+	# 	for numG in range(10):
+	# 		print(f"Game {numG + 1} ...")
+	# 		gm = self.makeGame(8, 'c', 'r', timeLimit=3.0, simulation_type="random", c_value=math.e, depth=5)
+	# 		gm.play(PB=False)
+	# 		if gm.GetWinner() == 'X':
+	# 			num2 += 1
+	# 	print(f"X win {num2} times, for random simulation")
 
 	# Add more tests here
 

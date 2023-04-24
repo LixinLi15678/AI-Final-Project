@@ -105,11 +105,14 @@ class Node:
         self.children.append(child)
 
 class MonteCarloPlayer(Player):
-    def __init__(self, symbol: str, time_limit: float, c: float, simulation_type: str):
+    def __init__(self, symbol: str, time_limit: float, c: float, simulation_type: str, print_count: bool, depth: int):
         super(MonteCarloPlayer, self).__init__(symbol)
         self.time_limit = time_limit
         self.c = c
+        self.depth = depth
         self.simulation_type = simulation_type
+        self.simulation_count = 0
+        self.print_count = print_count
 
     def selectInitialX(self, board: list) -> tuple:
         return (0, 0)
@@ -129,6 +132,7 @@ class MonteCarloPlayer(Player):
         start_time = time.time()
         root = Node(board)
 
+        self.simulation_count = 0
         while time.time() - start_time < self.time_limit:
             node = self.select_node(root)
             if node:
@@ -136,6 +140,8 @@ class MonteCarloPlayer(Player):
                 self.backpropagate(node, result)
             else:
                 break
+        if self.print_count:
+            print(f"Simulation count: {self.simulation_count}")
 
         best_move = max(root.children, key=lambda c: c.wins / c.visits if c.visits != 0 else 0).move
         return best_move
@@ -175,6 +181,7 @@ class MonteCarloPlayer(Player):
             int: The result of the simulation. 1 if the player won, 0 if the player lost,
                  and 0.5 if the game was a draw.
         """
+        self.simulation_count += 1
         state = node.state
         player = self.symbol
         return self.simulate(state, player)
@@ -194,6 +201,8 @@ class MonteCarloPlayer(Player):
             return self.random_simulation(board, symbol)
         elif self.simulation_type == "alphabeta":
             return self.alphabeta_simulation(board, symbol)
+        # elif self.simulation_type == "heuristic":
+        #     return self.heuristic_simulation(board, symbol)
         else:
             raise ValueError(f"Invalid simulation type: {self.simulation_type}")
 
@@ -209,15 +218,17 @@ class MonteCarloPlayer(Player):
         """
         state = board
         player = symbol
+        depth = self.depth
 
-        # Keep playing random moves until there are no legal moves left
-        while game_rules.getLegalMoves(state, player):
+        # Keep playing random moves until there are no legal moves left, or depth limit is reached
+        while game_rules.getLegalMoves(state, player) and depth > 0:
             move = random.choice(game_rules.getLegalMoves(state, player))
             state = game_rules.makeMove(state, move)
             if player == 'x':
                 player = 'o'
             else:
                 player = 'x'
+            depth -= 1
 
         # Determine the winner by comparing the number of 'x' and 'o' on the board
         x_count = sum(row.count('x') for row in state)
@@ -244,6 +255,62 @@ class MonteCarloPlayer(Player):
             int: The result of the simulation. 1 if the player won, 0 if the player lost.
         """
         return 0
+    '''
+    def heuristic_simulation(self, board: list, symbol: str) -> int:
+        """Simulates a game using a simple heuristic evaluation function and returns the result.
+
+        Args:
+            board (list): The board to simulate on.
+            symbol (str): The symbol to simulate with.
+
+        Returns:
+            int: The result of the simulation. 1 if the player won, 0 if the player lost.
+        """
+        state = board
+        player = symbol
+        depth = self.depth
+        score = 0
+
+        while depth > 0:
+            legal_moves = game_rules.getLegalMoves(state, player)
+            if not legal_moves:
+                break
+
+            # Choose the move that maximizes the heuristic value
+            best_move = max(legal_moves, key=lambda move: self.heuristic(game_rules.makeMove(state, move), player))
+            state = game_rules.makeMove(state, best_move)
+
+            if player == 'x':
+                player = 'o'
+            else:
+                player = 'x'
+            depth -= 1
+
+            score += self.heuristic(state, player)
+
+        # Normalize the score to the range [0, 1]
+        normalized_score = (score + self.depth) / (2 * self.depth)
+
+        # Determine the winner based on the normalized score
+        if normalized_score > 0.5:
+            return 1
+        else:
+            return 0
+
+    def heuristic(self, board: list, symbol: str) -> int:
+        """Evaluates the board state using a simple heuristic function.
+
+        Args:
+            board (list): The current state of the board.
+            symbol (str): The symbol to evaluate the board for.
+
+        Returns:
+            int: The heuristic value of the board state for the given symbol.
+        """
+        opponent_symbol = 'x' if symbol == 'o' else 'o'
+        player_moves = len(game_rules.getLegalMoves(board, symbol))
+        opponent_moves = len(game_rules.getLegalMoves(board, opponent_symbol))
+        return player_moves - opponent_moves'''
 
     def backpropagate(self, node: Node, result: int) -> None:
         while node:
@@ -296,13 +363,13 @@ class NotImplementedException:
     def __init__(self, message): self.message = message
     def __str__(self): return self.message
 
-def makePlayer(playerType, symbol, depth, timeLimit, cValue, sType):
+def makePlayer(playerType, symbol, depth, timeLimit, cValue, sType, pt):
     player = playerType[0].lower()
     if player   == 'h': return HumanPlayer(symbol)
     elif player == 'r': return RandomPlayer(symbol)
     elif player == 'a': return AlphaBetaPlayer(symbol, depth)
     elif player == 'd': return DeterministicPlayer(symbol)
-    elif player == 'c': return MonteCarloPlayer(symbol, timeLimit, cValue, sType)
+    elif player == 'c': return MonteCarloPlayer(symbol, timeLimit, cValue, sType, pt, depth)
     else: raise NotImplementedException('Unrecognized player type {}'.format(playerType))
 
 def callMoveFunction(player, board):
