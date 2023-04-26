@@ -89,26 +89,6 @@ class GameTest(unittest.TestCase):
 		print("Done!")
 		print(result)
 
-	# def test3(self):
-	# 	# This test is test the performance between simulation type
-	# 	num1 = 0
-	# 	num2 = 0
-	# 	for numG in range(10):
-	# 		print(f"Game {numG + 1} ...")
-	# 		gm = self.makeGame(8, 'c', 'r', timeLimit=3.0, simulation_type="heuristic", c_value=math.e, depth=5)
-	# 		gm.play(PB=False)
-	# 		if gm.GetWinner() == 'X':
-	# 			num1 += 1
-	# 	print(f"X win {num1} times, for heuristic simulation")
-	#
-	# 	for numG in range(10):
-	# 		print(f"Game {numG + 1} ...")
-	# 		gm = self.makeGame(8, 'c', 'r', timeLimit=3.0, simulation_type="random", c_value=math.e, depth=5)
-	# 		gm.play(PB=False)
-	# 		if gm.GetWinner() == 'X':
-	# 			num2 += 1
-	# 	print(f"X win {num2} times, for random simulation")
-
 	# Add more tests here
 
 if __name__== "__main__":

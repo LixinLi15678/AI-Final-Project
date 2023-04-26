@@ -255,62 +255,6 @@ class MonteCarloPlayer(Player):
             int: The result of the simulation. 1 if the player won, 0 if the player lost.
         """
         return 0
-    '''
-    def heuristic_simulation(self, board: list, symbol: str) -> int:
-        """Simulates a game using a simple heuristic evaluation function and returns the result.
-
-        Args:
-            board (list): The board to simulate on.
-            symbol (str): The symbol to simulate with.
-
-        Returns:
-            int: The result of the simulation. 1 if the player won, 0 if the player lost.
-        """
-        state = board
-        player = symbol
-        depth = self.depth
-        score = 0
-
-        while depth > 0:
-            legal_moves = game_rules.getLegalMoves(state, player)
-            if not legal_moves:
-                break
-
-            # Choose the move that maximizes the heuristic value
-            best_move = max(legal_moves, key=lambda move: self.heuristic(game_rules.makeMove(state, move), player))
-            state = game_rules.makeMove(state, best_move)
-
-            if player == 'x':
-                player = 'o'
-            else:
-                player = 'x'
-            depth -= 1
-
-            score += self.heuristic(state, player)
-
-        # Normalize the score to the range [0, 1]
-        normalized_score = (score + self.depth) / (2 * self.depth)
-
-        # Determine the winner based on the normalized score
-        if normalized_score > 0.5:
-            return 1
-        else:
-            return 0
-
-    def heuristic(self, board: list, symbol: str) -> int:
-        """Evaluates the board state using a simple heuristic function.
-
-        Args:
-            board (list): The current state of the board.
-            symbol (str): The symbol to evaluate the board for.
-
-        Returns:
-            int: The heuristic value of the board state for the given symbol.
-        """
-        opponent_symbol = 'x' if symbol == 'o' else 'o'
-        player_moves = len(game_rules.getLegalMoves(board, symbol))
-        opponent_moves = len(game_rules.getLegalMoves(board, opponent_symbol))
-        return player_moves - opponent_moves'''
 
     def backpropagate(self, node: Node, result: int) -> None:
         while node:
