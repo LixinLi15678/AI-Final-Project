@@ -221,14 +221,13 @@ class MonteCarloPlayer(Player):
         depth = self.depth
 
         # Keep playing random moves until there are no legal moves left, or depth limit is reached
-        while game_rules.getLegalMoves(state, player) and depth > 0:
+        while game_rules.getLegalMoves(state, player):
             move = random.choice(game_rules.getLegalMoves(state, player))
             state = game_rules.makeMove(state, move)
             if player == 'x':
                 player = 'o'
             else:
                 player = 'x'
-            depth -= 1
 
         # Determine the winner by comparing the legal move of 'x' and 'o' on the board
         x_count = len(game_rules.getLegalMoves(state, 'x'))

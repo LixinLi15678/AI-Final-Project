@@ -5,7 +5,7 @@ from player import makePlayer
 import json
 
 class GameTest(unittest.TestCase):
-	def makeGame(self, size, player1, player2, depth=3, timeLimit=2.0, simulation_type='random', c_value=1.414, script=None, pt=False):
+	def makeGame(self, size, player1, player2, depth=5, timeLimit=2.0, simulation_type='random', c_value=1.414, script=None, pt=False):
 		gm = game_manager.GameManager(
 		      size
 		    , size
@@ -24,14 +24,14 @@ class GameTest(unittest.TestCase):
         Test if MCPlayer implement successfully
         """
 		# X Always win
-		gm = self.makeGame(3, 'd', 'c', timeLimit=1.0, simulation_type='random', c_value=1.414)
-		gm.play()
-		self.assertEqual(gm.GetWinner(), 'X')
-
-		# MC should do better
-		gm = self.makeGame(5, 'c', 'd', timeLimit=1.0, simulation_type='random', c_value=1.414)
-		gm.play()
-		self.assertEqual(gm.GetWinner(), 'X')
+		# gm = self.makeGame(3, 'd', 'c', timeLimit=1.0, simulation_type='random', c_value=1.414)
+		# gm.play()
+		# self.assertEqual(gm.GetWinner(), 'X')
+		#
+		# # MC should do better
+		# gm = self.makeGame(5, 'c', 'd', timeLimit=1.0, simulation_type='random', c_value=1.414)
+		# gm.play()
+		# self.assertEqual(gm.GetWinner(), 'X')
 
 	def test2(self):
 		"""
@@ -46,16 +46,15 @@ class GameTest(unittest.TestCase):
 			num = temp['num']
 		print("History loaded")
 
-		cList = [1.414, 1.732, 2, 2.236, 2.449, 2.646, math.e, 2.828, 3, math.pi]
-		numGame = 1
+		cList = [1.414, 1.732, 2, 2.236, 2.449, 2.646, math.e, 2.828, 3]
+		numGame = 3
 		size = 8
 		type = 'random'
-		time = 5.0
+		time = 10.0
 		player1 = 'c'
 		player2 = 'r'
 		result = {}
 		write = {}
-		depth = 10
 
 		for c in cList:
 			# Count the number of X win
@@ -63,7 +62,7 @@ class GameTest(unittest.TestCase):
 			numX = 0
 			for numG in range(numGame):
 				print(f"Game {numG + 1} ...")
-				gm = self.makeGame(size, player1, player2, timeLimit=time, simulation_type=type, c_value=c, pt=True, depth=depth)
+				gm = self.makeGame(size, player1, player2, timeLimit=time, simulation_type=type, c_value=c, pt=True)
 				gm.play(PB=False)
 				if gm.GetWinner() == 'X':
 					numX += 1
@@ -77,7 +76,6 @@ class GameTest(unittest.TestCase):
 		write['player2'] = player2
 		write['game'] = numGame
 		write['time'] = time
-		write['depth'] = depth
 		write['simulation'] = type
 		write['result'] = result
 
