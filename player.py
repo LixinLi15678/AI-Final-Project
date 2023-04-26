@@ -230,9 +230,9 @@ class MonteCarloPlayer(Player):
                 player = 'x'
             depth -= 1
 
-        # Determine the winner by comparing the number of 'x' and 'o' on the board
-        x_count = sum(row.count('x') for row in state)
-        o_count = sum(row.count('o') for row in state)
+        # Determine the winner by comparing the legal move of 'x' and 'o' on the board
+        x_count = len(game_rules.getLegalMoves(state, 'x'))
+        o_count = len(game_rules.getLegalMoves(state, 'o'))
 
         if x_count > o_count:
             winner = 'x'
