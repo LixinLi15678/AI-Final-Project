@@ -218,7 +218,6 @@ class MonteCarloPlayer(Player):
         """
         state = board
         player = symbol
-        depth = self.depth
 
         # Keep playing random moves until there are no legal moves left
         while game_rules.getLegalMoves(state, player):
@@ -234,6 +233,56 @@ class MonteCarloPlayer(Player):
         else:
             return 1
 
+    def alphabeta_getmove(self, board, player, depth):
+        if depth == 0:
+            legalMoves = game_rules.getLegalMoves(board, player)
+            if len(legalMoves) > 0:
+                return legalMoves[0]
+            else:
+                return None
+        return self.alpha_beta_max_value(board, NEG_INF, POS_INF, 0, player, depth)[0]
+
+    def alpha_beta_max_value(self, board, alpha, beta, d, player, depth):
+        if d == depth:
+            return None
+
+        legalMoves = game_rules.getLegalMoves(board, player)
+        if len(legalMoves) > 0:
+            max_v = NEG_INF
+            ans = None
+            for move in legalMoves:
+                new_board = game_rules.makeMove(board, move)
+                tmp = self.alpha_beta_min_value(new_board, alpha, beta, d+1, player, depth)
+                v = tmp if tmp is not None else self.h1(new_board, player)
+                if v > max_v:
+                    max_v = v
+                    ans = move
+                alpha = max(max_v, alpha)
+                if beta <= alpha:
+                    return ans if d == 0 else max_v
+            return [ans, max_v] if d == 0 else max_v
+        else:
+            return None
+
+    def alpha_beta_min_value(self, board, alpha, beta, d, player, depth):
+        if d == depth:
+            return None
+
+        legalMoves = game_rules.getLegalMoves(board, 'o' if player == 'x' else 'x')
+        if len(legalMoves) > 0:
+            min_v = POS_INF
+            for move in legalMoves:
+                new_board = game_rules.makeMove(board, move)
+                tmp = self.alpha_beta_max_value(new_board, alpha, beta, d+1, player, depth)
+                v = tmp if tmp is not None else self.h1(new_board, 'o' if player == 'x' else 'x')
+                min_v = min(min_v, v)
+                beta = min(min_v, beta)
+                if beta <= alpha:
+                    return min_v
+            return min_v
+        else:
+            return None
+
     def alphabeta_simulation(self, board: list, symbol: str) -> int:
         """Simulates a game using the alpha-beta pruning algorithm and returns the result.
 
@@ -244,11 +293,13 @@ class MonteCarloPlayer(Player):
         Returns:
             int: The result of the simulation. 1 if the player won, 0 if the player lost.
         """
+
         state = board
         player = symbol
         depth = self.depth
+
         while game_rules.getLegalMoves(state, player):
-            move = random.choice(game_rules.getLegalMoves(state, player))
+            move = self.alphabeta_getmove(state, player, depth)
             state = game_rules.makeMove(state, move)
             if player == 'x':
                 player = 'o'
