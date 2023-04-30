@@ -49,7 +49,7 @@ class GameTest(unittest.TestCase):
 		cList = [1.414, 1.732, 2, 2.236, 2.449, 2.646, math.e, 2.828, 3]
 		numGame = 10
 		size = 8
-		type = 'random'
+		type = 'alphabeta'
 		time = 5.0
 		player1 = 'c'
 		player2 = 'r'
