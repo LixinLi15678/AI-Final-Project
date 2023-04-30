@@ -47,7 +47,7 @@ class GameTest(unittest.TestCase):
 		print("History loaded")
 
 		cList = [1.414, 1.732, 2, 2.236, 2.449, 2.646, math.e, 2.828, 3]
-		numGame = 3
+		numGame = 10
 		size = 8
 		type = 'random'
 		time = 5.0
@@ -55,6 +55,7 @@ class GameTest(unittest.TestCase):
 		player2 = 'r'
 		result = {}
 		write = {}
+		depth = 3
 
 		for c in cList:
 			# Count the number of X win
@@ -62,7 +63,7 @@ class GameTest(unittest.TestCase):
 			numX = 0
 			for numG in range(numGame):
 				print(f"Game {numG + 1} ...")
-				gm = self.makeGame(size, player1, player2, timeLimit=time, depth=3, simulation_type=type, c_value=c, pt=True)
+				gm = self.makeGame(size, player1, player2, timeLimit=time, depth=depth, simulation_type=type, c_value=c, pt=True)
 				gm.play(PB=False)
 				if gm.GetWinner() == 'X':
 					numX += 1
@@ -76,6 +77,7 @@ class GameTest(unittest.TestCase):
 		write['player2'] = player2
 		write['game'] = numGame
 		write['time'] = time
+		write['depth'] = depth
 		write['simulation'] = type
 		write['result'] = result
 

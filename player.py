@@ -233,7 +233,7 @@ class MonteCarloPlayer(Player):
         else:
             return 1
 
-    def alphabeta_getmove(self, board, player, depth):
+    def alphabeta_getmove(self, board, player, depth) -> tuple:
         if depth == 0:
             legalMoves = game_rules.getLegalMoves(board, player)
             if len(legalMoves) > 0:
