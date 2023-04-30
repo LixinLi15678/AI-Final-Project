@@ -220,7 +220,7 @@ class MonteCarloPlayer(Player):
         player = symbol
         depth = self.depth
 
-        # Keep playing random moves until there are no legal moves left, or depth limit is reached
+        # Keep playing random moves until there are no legal moves left
         while game_rules.getLegalMoves(state, player):
             move = random.choice(game_rules.getLegalMoves(state, player))
             state = game_rules.makeMove(state, move)
@@ -229,19 +229,10 @@ class MonteCarloPlayer(Player):
             else:
                 player = 'x'
 
-        # Determine the winner by comparing the legal move of 'x' and 'o' on the board
-        x_count = len(game_rules.getLegalMoves(state, 'x'))
-        o_count = len(game_rules.getLegalMoves(state, 'o'))
-
-        if x_count > o_count:
-            winner = 'x'
-        else:
-            winner = 'o'
-
-        if winner == self.symbol:
-            return 1
-        else:
+        if player == self.symbol:
             return 0
+        else:
+            return 1
 
     def alphabeta_simulation(self, board: list, symbol: str) -> int:
         """Simulates a game using the alpha-beta pruning algorithm and returns the result.
@@ -253,6 +244,16 @@ class MonteCarloPlayer(Player):
         Returns:
             int: The result of the simulation. 1 if the player won, 0 if the player lost.
         """
+        state = board
+        player = symbol
+        depth = self.depth
+        while game_rules.getLegalMoves(state, player):
+            move = random.choice(game_rules.getLegalMoves(state, player))
+            state = game_rules.makeMove(state, move)
+            if player == 'x':
+                player = 'o'
+            else:
+                player = 'x'
         return 0
 
     def backpropagate(self, node: Node, result: int) -> None:
