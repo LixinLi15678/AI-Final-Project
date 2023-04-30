@@ -50,7 +50,7 @@ class GameTest(unittest.TestCase):
 		numGame = 10
 		size = 8
 		type = 'alphabeta'
-		time = 5.0
+		time = 15.0
 		player1 = 'c'
 		player2 = 'r'
 		result = {}
