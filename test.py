@@ -64,10 +64,10 @@ class GameTest(unittest.TestCase):
 		cList = [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
 		numGame = 10
 		size = 8
-		type = 'alphabeta'
+		type = 'random'
 		simulatins = 50
 		player1 = 'c'
-		player2 = 'a'
+		player2 = 'r'
 		result = {}
 		write = {}
 		depth = 3
