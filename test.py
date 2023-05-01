@@ -41,7 +41,7 @@ class GameTest(unittest.TestCase):
 	# 	for i in range(100):
 	# 		gm = self.makeGame(8, 'c', 'a', number_of_simulations=50, depth=3, simulation_type="random", c_value=2, sdepth=3)
 	# 		gm.play(PB=False)
-	# 		if gm.GetWinner() == "X" or gm.GetWinner() == "x":
+	# 		if gm.GetWinner() == "X":
 	# 			total += 1
 	# 		print("total: " + str(i+1) + " " + str(total) + "WINS")
 	# 	print("total: " + str(total) + " " + str(total) + "WINS")
@@ -81,7 +81,7 @@ class GameTest(unittest.TestCase):
 				print(f"Game {numG + 1} ...")
 				gm = self.makeGame(size, player1, player2, number_of_simulations=simulatins, depth=depth, simulation_type=type, c_value=c, sdepth=sdepth)
 				gm.play(PB=False)
-				if gm.GetWinner() == 'X' or gm.GetWinner() == 'x':
+				if gm.GetWinner() == 'X':
 					numX += 1
 				print(f"X win {numX} times")
 			result[round(c, 3)] = numX
