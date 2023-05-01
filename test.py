@@ -21,12 +21,13 @@ class GameTest(unittest.TestCase):
 
 	def test1(self):
 		total = 0
-		for i in range(10):
-			gm = self.makeGame(8, 'c', 'r', number_of_simulations=50, depth=3, simulation_type="alphabeta", c_value=2, pt=True)
+		for i in range(100):
+			gm = self.makeGame(8, 'c', 'a', number_of_simulations=100, depth=3, simulation_type="random", c_value=2, pt=True)
 			gm.play(PB=False)
 			if gm.GetWinner() == "X" or "x":
 				total += 1
-		print(total, "WINS")
+			print("total: " + str(i+1) + " " + str(total) + "WINS")
+		print("total: " + str(i+1) + " " + str(total) + "WINS")
 		self.assertTrue(True)
 
 
