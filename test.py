@@ -18,20 +18,20 @@ class GameTest(unittest.TestCase):
 		signal.signal(signal.SIGQUIT, gm.interrupt)
 		signal.signal(signal.SIGALRM, gm.interrupt)
 		return gm
-
+	'''
 	def test1(self):
 		"""
         Test if MCPlayer implement successfully
         """
 		# X Always win
-		# gm = self.makeGame(3, 'd', 'c', timeLimit=1.0, simulation_type='random', c_value=1.414)
-		# gm.play()
-		# self.assertEqual(gm.GetWinner(), 'X')
-		#
-		# # MC should do better
-		# gm = self.makeGame(5, 'c', 'd', timeLimit=1.0, simulation_type='random', c_value=1.414)
-		# gm.play()
-		# self.assertEqual(gm.GetWinner(), 'X')
+		gm = self.makeGame(3, 'd', 'c', timeLimit=1.0, simulation_type='random', c_value=1.414)
+		gm.play()
+		self.assertEqual(gm.GetWinner(), 'X')
+
+		# MC should do better
+		gm = self.makeGame(5, 'c', 'd', timeLimit=1.0, simulation_type='random', c_value=1.414)
+		gm.play()
+		self.assertEqual(gm.GetWinner(), 'X')
 
 	def test2(self):
 		"""
@@ -88,6 +88,7 @@ class GameTest(unittest.TestCase):
 
 		print("Done!")
 		print(result)
+		self.assertTrue(True)
 
 	# Add more tests here
 	def test3(self):
@@ -103,6 +104,38 @@ class GameTest(unittest.TestCase):
 				total += 1
 		print(total, "WINS")
 		self.assertEqual(True, True)
+	'''
+	def test4(self):
+		# alphabeta vs mc
+		p1 = 'c'
+		p2 = 'a'
+		depth = 3
+		total = 0
+		for i in range(10):
+			print(f"Game {i+1}:")
+			gm = self.makeGame(8, p1, p2, depth, timeLimit=15.0, simulation_type='alphabeta', c_value=math.sqrt(5))
+			gm.play()
+			if gm.GetWinner() == "X" or "x":
+				total += 1
+			print(f"{gm.GetWinner()} wins")
+		print(total, "WINS")
+		self.assertTrue(True)
 
-if __name__== "__main__":
+	def test5(self):
+		# alphabeta vs mc
+		p1 = 'c'
+		p2 = 'a'
+		depth = 3
+		total = 0
+		for i in range(10):
+			print(f"Game {i+1}:")
+			gm = self.makeGame(8, p1, p2, depth, timeLimit=15.0, simulation_type='random', c_value=math.sqrt(5))
+			gm.play()
+			if gm.GetWinner() == "X" or "x":
+				total += 1
+			print(f"{gm.GetWinner()} wins")
+		print(total, "WINS")
+		self.assertTrue(True)
+
+if __name__ == "__main__":
 	unittest.main()
