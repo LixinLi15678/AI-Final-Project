@@ -39,7 +39,7 @@ class GameTest(unittest.TestCase):
 	# 	total = 0
 	# 	print("Testing ...")
 	# 	for i in range(100):
-	# 		gm = self.makeGame(8, 'c', 'a', number_of_simulations=100, depth=3, simulation_type="random", c_value=2, pt=True, sdepth=5)
+	# 		gm = self.makeGame(8, 'c', 'a', number_of_simulations=100, depth=3, simulation_type="random", c_value=2, sdepth=5)
 	# 		gm.play(PB=False)
 	# 		if gm.GetWinner() == "X" or "x":
 	# 			total += 1
@@ -79,7 +79,7 @@ class GameTest(unittest.TestCase):
 			numX = 0
 			for numG in range(numGame):
 				print(f"Game {numG + 1} ...")
-				gm = self.makeGame(size, player1, player2, number_of_simulations=simulatins, depth=depth, simulation_type=type, c_value=c, pt=True, sdepth=sdepth)
+				gm = self.makeGame(size, player1, player2, number_of_simulations=simulatins, depth=depth, simulation_type=type, c_value=c, sdepth=sdepth)
 				gm.play(PB=False)
 				if gm.GetWinner() == 'X':
 					numX += 1
