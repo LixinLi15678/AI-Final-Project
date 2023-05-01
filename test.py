@@ -90,6 +90,19 @@ class GameTest(unittest.TestCase):
 		print(result)
 
 	# Add more tests here
+	def test3(self):
+		# identical to test 7 but use alpha beta
+		p1 = 'a'
+		p2 = 'r'
+		depth = 3
+		total = 0
+		for i in range(10):
+			gm = self.makeGame(8, p1, p2, depth)
+			gm.play()
+			if gm.GetWinner() == "X" or "x":
+				total += 1
+		print(total, "WINS")
+		self.assertEqual(True, True)
 
 if __name__== "__main__":
 	unittest.main()
