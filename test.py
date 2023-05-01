@@ -5,12 +5,12 @@ from player import makePlayer
 import json
 
 class GameTest(unittest.TestCase):
-	def makeGame(self, size, player1, player2, depth=5, timeLimit=2.0, simulation_type='random', c_value=1.414, script=None, pt=False):
+	def makeGame(self, size, player1, player2, depth=5, number_of_simulations=50, simulation_type='random', c_value=1.414, script=None, pt=False):
 		gm = game_manager.GameManager(
 		      size
 		    , size
-		    , makePlayer(player1, 'x', depth, timeLimit, c_value, simulation_type, pt)
-		    , makePlayer(player2, 'o', depth, timeLimit, c_value, simulation_type, pt)
+		    , makePlayer(player1, 'x', depth, number_of_simulations, c_value, simulation_type, pt)
+		    , makePlayer(player2, 'o', depth, number_of_simulations, c_value, simulation_type, pt)
 		    , script
 		    , True)
 		signal.signal(signal.SIGABRT, gm.interrupt)
@@ -18,20 +18,17 @@ class GameTest(unittest.TestCase):
 		signal.signal(signal.SIGQUIT, gm.interrupt)
 		signal.signal(signal.SIGALRM, gm.interrupt)
 		return gm
-	'''
-	def test1(self):
-		"""
-        Test if MCPlayer implement successfully
-        """
-		# X Always win
-		gm = self.makeGame(3, 'd', 'c', timeLimit=1.0, simulation_type='random', c_value=1.414)
-		gm.play()
-		self.assertEqual(gm.GetWinner(), 'X')
 
-		# MC should do better
-		gm = self.makeGame(5, 'c', 'd', timeLimit=1.0, simulation_type='random', c_value=1.414)
-		gm.play()
-		self.assertEqual(gm.GetWinner(), 'X')
+	def test1(self):
+		total = 0
+		for i in range(10):
+			gm = self.makeGame(8, 'c', 'r', number_of_simulations=50, depth=3, simulation_type="alphabeta", c_value=2, pt=True)
+			gm.play(PB=False)
+			if gm.GetWinner() == "X" or "x":
+				total += 1
+		print(total, "WINS")
+		self.assertTrue(True)
+
 
 	def test2(self):
 		"""
@@ -46,11 +43,11 @@ class GameTest(unittest.TestCase):
 			num = temp['num']
 		print("History loaded")
 
-		cList = [1.414, 1.732, 2, 2.236, 2.449, 2.646, math.e, 2.828, 3]
+		cList = [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
 		numGame = 10
 		size = 8
-		type = 'alphabeta'
-		time = 15.0
+		type = 'random'
+		simulatins = 50
 		player1 = 'c'
 		player2 = 'r'
 		result = {}
@@ -63,7 +60,7 @@ class GameTest(unittest.TestCase):
 			numX = 0
 			for numG in range(numGame):
 				print(f"Game {numG + 1} ...")
-				gm = self.makeGame(size, player1, player2, timeLimit=time, depth=depth, simulation_type=type, c_value=c, pt=True)
+				gm = self.makeGame(size, player1, player2, number_of_simulations=100, depth=depth, simulation_type=type, c_value=c, pt=True)
 				gm.play(PB=False)
 				if gm.GetWinner() == 'X':
 					numX += 1
@@ -76,7 +73,7 @@ class GameTest(unittest.TestCase):
 		write['player1'] = player1
 		write['player2'] = player2
 		write['game'] = numGame
-		write['time'] = time
+		write['simulations'] = simulatins
 		write['depth'] = depth
 		write['simulation'] = type
 		write['result'] = result
@@ -91,51 +88,38 @@ class GameTest(unittest.TestCase):
 		self.assertTrue(True)
 
 	# Add more tests here
-	def test3(self):
-		# identical to test 7 but use alpha beta
-		p1 = 'a'
-		p2 = 'r'
-		depth = 3
-		total = 0
-		for i in range(10):
-			gm = self.makeGame(8, p1, p2, depth)
-			gm.play()
-			if gm.GetWinner() == "X" or "x":
-				total += 1
-		print(total, "WINS")
-		self.assertEqual(True, True)
-	'''
-	def test4(self):
-		# alphabeta vs mc
-		p1 = 'c'
-		p2 = 'a'
-		depth = 3
-		total = 0
-		for i in range(10):
-			print(f"Game {i+1}:")
-			gm = self.makeGame(8, p1, p2, depth, timeLimit=15.0, simulation_type='alphabeta', c_value=math.sqrt(5))
-			gm.play(PB=False)
-			if gm.GetWinner() == "X" or "x":
-				total += 1
-			print(f"{gm.GetWinner()} wins")
-		print(total, "WINS")
-		self.assertTrue(True)
 
-	def test5(self):
-		# alphabeta vs mc
-		p1 = 'c'
-		p2 = 'a'
-		depth = 3
-		total = 0
-		for i in range(10):
-			print(f"Game {i+1}:")
-			gm = self.makeGame(8, p1, p2, depth, timeLimit=15.0, simulation_type='random', c_value=math.sqrt(5))
-			gm.play(PB=False)
-			if gm.GetWinner() == "X" or "x":
-				total += 1
-			print(f"{gm.GetWinner()} wins")
-		print(total, "WINS")
-		self.assertTrue(True)
+	# def test4(self):
+	# 	# alphabeta vs mc
+	# 	p1 = 'c'
+	# 	p2 = 'a'
+	# 	depth = 3
+	# 	total = 0
+	# 	for i in range(10):
+	# 		print(f"Game {i+1}:")
+	# 		gm = self.makeGame(8, p1, p2, depth, timeLimit=15.0, simulation_type='alphabeta', c_value=math.sqrt(5))
+	# 		gm.play(PB=False)
+	# 		if gm.GetWinner() == "X" or "x":
+	# 			total += 1
+	# 		print(f"{gm.GetWinner()} wins")
+	# 	print(total, "WINS")
+	# 	self.assertTrue(True)
+	#
+	# def test5(self):
+	# 	# alphabeta vs mc
+	# 	p1 = 'c'
+	# 	p2 = 'a'
+	# 	depth = 3
+	# 	total = 0
+	# 	for i in range(10):
+	# 		print(f"Game {i+1}:")
+	# 		gm = self.makeGame(8, p1, p2, depth, timeLimit=15.0, simulation_type='random', c_value=math.sqrt(5))
+	# 		gm.play(PB=False)
+	# 		if gm.GetWinner() == "X" or "x":
+	# 			total += 1
+	# 		print(f"{gm.GetWinner()} wins")
+	# 	print(total, "WINS")
+	# 	self.assertTrue(True)
 
 if __name__ == "__main__":
 	unittest.main()
