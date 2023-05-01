@@ -114,7 +114,7 @@ class GameTest(unittest.TestCase):
 		for i in range(10):
 			print(f"Game {i+1}:")
 			gm = self.makeGame(8, p1, p2, depth, timeLimit=15.0, simulation_type='alphabeta', c_value=math.sqrt(5))
-			gm.play()
+			gm.play(PB=False)
 			if gm.GetWinner() == "X" or "x":
 				total += 1
 			print(f"{gm.GetWinner()} wins")
@@ -130,7 +130,7 @@ class GameTest(unittest.TestCase):
 		for i in range(10):
 			print(f"Game {i+1}:")
 			gm = self.makeGame(8, p1, p2, depth, timeLimit=15.0, simulation_type='random', c_value=math.sqrt(5))
-			gm.play()
+			gm.play(PB=False)
 			if gm.GetWinner() == "X" or "x":
 				total += 1
 			print(f"{gm.GetWinner()} wins")
