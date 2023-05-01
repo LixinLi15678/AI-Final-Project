@@ -37,6 +37,7 @@ class GameTest(unittest.TestCase):
 
 	# def test1(self):
 	# 	total = 0
+	# 	print("Testing ...")
 	# 	for i in range(100):
 	# 		gm = self.makeGame(8, 'c', 'a', number_of_simulations=100, depth=3, simulation_type="random", c_value=2, pt=True, sdepth=5)
 	# 		gm.play(PB=False)
