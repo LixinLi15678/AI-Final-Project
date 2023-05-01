@@ -126,14 +126,14 @@ class Node:
         return self.value / self.visits + self.c_param * math.sqrt(2 * math.log(self.parent.visits) / self.visits)
 
 class MonteCarloPlayer(Player):
-    def __init__(self, symbol: str, number_of_simulations: int, c: float, simulation_type: str, print_count: bool, depth: int):
+    def __init__(self, symbol: str, number_of_simulations: int, c: float, simulation_type: str, print_count: bool, sdepth: int):
         super(MonteCarloPlayer, self).__init__(symbol)
         self.number_of_simulations = number_of_simulations
         self.c = c
-        self.depth = depth
         self.simulation_type = simulation_type
         self.simulation_count = 0
         self.print_count = print_count
+        self.sdepth = sdepth
 
     def selectInitialX(self, board: list) -> tuple:
         return (0, 0)
@@ -284,7 +284,7 @@ class MonteCarloPlayer(Player):
         """
         state = board
         player = symbol
-        depth = self.depth
+        depth = self.sdepth
         moves = game_rules.getLegalMoves(state, player)
 
         while moves:
@@ -395,13 +395,13 @@ class NotImplementedException:
     def __init__(self, message): self.message = message
     def __str__(self): return self.message
 
-def makePlayer(playerType, symbol, depth, timeLimit, cValue, sType, pt):
+def makePlayer(playerType, symbol, depth, timeLimit, cValue, sType, sdepth):
     player = playerType[0].lower()
     if player   == 'h': return HumanPlayer(symbol)
     elif player == 'r': return RandomPlayer(symbol)
     elif player == 'a': return AlphaBetaPlayer(symbol, depth)
     elif player == 'd': return DeterministicPlayer(symbol)
-    elif player == 'c': return MonteCarloPlayer(symbol, timeLimit, cValue, sType, pt, depth)
+    elif player == 'c': return MonteCarloPlayer(symbol, timeLimit, cValue, sType, sdepth)
     else: raise NotImplementedException('Unrecognized player type {}'.format(playerType))
 
 def callMoveFunction(player, board):

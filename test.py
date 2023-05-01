@@ -5,12 +5,28 @@ from player import makePlayer
 import json
 
 class GameTest(unittest.TestCase):
-	def makeGame(self, size, player1, player2, depth=5, number_of_simulations=50, simulation_type='random', c_value=1.414, script=None, pt=False):
+	def makeGame(self, size, player1, player2, depth=5, number_of_simulations=50, simulation_type='random', c_value=1.414, script=None, sdepth=5) -> game_manager.GameManager:
+		"""Make a game with the given parameters.
+
+		Args:
+			size (int): The size of the board.
+			player1 (str): The type of player 1.
+			player2 (str): The type of player 2.
+			depth (int, optional): The depth of the tree, used in AB. Defaults to 5.
+			number_of_simulations (int, optional): The number of simulations. Defaults to 50.
+			simulation_type (str, optional): The type of simulation in MC. Defaults to 'random'.
+			c_value (float, optional): The c value in MC. Defaults to 1.414.
+			script (str, optional): The script to run. Defaults to None.
+			sdepth (int, optional): The depth of the simulation. Defaults to 5.
+
+		Returns:
+			game_manager.GameManager: The game manager.
+		"""
 		gm = game_manager.GameManager(
 		      size
 		    , size
-		    , makePlayer(player1, 'x', depth, number_of_simulations, c_value, simulation_type, pt)
-		    , makePlayer(player2, 'o', depth, number_of_simulations, c_value, simulation_type, pt)
+		    , makePlayer(player1, 'x', depth, number_of_simulations, c_value, simulation_type, pt, sdepth)
+		    , makePlayer(player2, 'o', depth, number_of_simulations, c_value, simulation_type, pt, sdepth)
 		    , script
 		    , True)
 		signal.signal(signal.SIGABRT, gm.interrupt)
@@ -19,16 +35,16 @@ class GameTest(unittest.TestCase):
 		signal.signal(signal.SIGALRM, gm.interrupt)
 		return gm
 
-	def test1(self):
-		total = 0
-		for i in range(100):
-			gm = self.makeGame(8, 'c', 'a', number_of_simulations=100, depth=3, simulation_type="random", c_value=2, pt=True)
-			gm.play(PB=False)
-			if gm.GetWinner() == "X" or "x":
-				total += 1
-			print("total: " + str(i+1) + " " + str(total) + "WINS")
-		print("total: " + str(i+1) + " " + str(total) + "WINS")
-		self.assertTrue(True)
+	# def test1(self):
+	# 	total = 0
+	# 	for i in range(100):
+	# 		gm = self.makeGame(8, 'c', 'a', number_of_simulations=100, depth=3, simulation_type="random", c_value=2, pt=True, sdepth=5)
+	# 		gm.play(PB=False)
+	# 		if gm.GetWinner() == "X" or "x":
+	# 			total += 1
+	# 		print("total: " + str(i+1) + " " + str(total) + "WINS")
+	# 	print("total: " + str(i+1) + " " + str(total) + "WINS")
+	# 	self.assertTrue(True)
 
 
 	def test2(self):
@@ -50,10 +66,11 @@ class GameTest(unittest.TestCase):
 		type = 'random'
 		simulatins = 50
 		player1 = 'c'
-		player2 = 'r'
+		player2 = 'a'
 		result = {}
 		write = {}
 		depth = 3
+		sdepth = 3
 
 		for c in cList:
 			# Count the number of X win
@@ -61,7 +78,7 @@ class GameTest(unittest.TestCase):
 			numX = 0
 			for numG in range(numGame):
 				print(f"Game {numG + 1} ...")
-				gm = self.makeGame(size, player1, player2, number_of_simulations=100, depth=depth, simulation_type=type, c_value=c, pt=True)
+				gm = self.makeGame(size, player1, player2, number_of_simulations=simulatins, depth=depth, simulation_type=type, c_value=c, pt=True, sdepth=sdepth)
 				gm.play(PB=False)
 				if gm.GetWinner() == 'X':
 					numX += 1
@@ -75,8 +92,9 @@ class GameTest(unittest.TestCase):
 		write['player2'] = player2
 		write['game'] = numGame
 		write['simulations'] = simulatins
-		write['depth'] = depth
+		write['ab depth'] = depth
 		write['simulation'] = type
+		write['simulation depth'] = sdepth
 		write['result'] = result
 
 		with open('history.json', 'a') as f:
@@ -87,8 +105,6 @@ class GameTest(unittest.TestCase):
 		print("Done!")
 		print(result)
 		self.assertTrue(True)
-
-	# Add more tests here
 
 	# def test4(self):
 	# 	# alphabeta vs mc
