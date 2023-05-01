@@ -25,8 +25,8 @@ class GameTest(unittest.TestCase):
 		gm = game_manager.GameManager(
 		      size
 		    , size
-		    , makePlayer(player1, 'x', depth, number_of_simulations, c_value, simulation_type, pt, sdepth)
-		    , makePlayer(player2, 'o', depth, number_of_simulations, c_value, simulation_type, pt, sdepth)
+		    , makePlayer(player1, 'x', depth, number_of_simulations, c_value, simulation_type, sdepth)
+		    , makePlayer(player2, 'o', depth, number_of_simulations, c_value, simulation_type, sdepth)
 		    , script
 		    , True)
 		signal.signal(signal.SIGABRT, gm.interrupt)
