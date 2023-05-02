@@ -108,7 +108,7 @@ class Node:
         self.player = player
 
     def __str__(self):
-        return "{Board = " + str(self.state) + ", C: " + str(self.c_param) + ", Player = " + str(self.player) + ", Parent = " + str(self.parent) + ", Move: " + str(self.move) + "}"
+        return "{Board = " + str(self.state) + ", C: " + str(self.c_param) + ", Player = " + str(self.player) + ", Parent = " + str(self.parent) + ", Move: " + str(self.move) + ", Children: " + str(len(self.children)) + "}"
 
     def __repr__(self):
         return self.__str__()
@@ -203,7 +203,7 @@ class MonteCarloPlayer(Player):
         """
         for move in legal_moves:
             new_board = game_rules.makeMove(node.state.copy(), move)
-            expansion_node = Node(new_board, self.c, player='o' if self.symbol == 'x' else 'x', parent=node, move=move)
+            expansion_node = Node(new_board, self.c, player='o' if node.player == 'x' else 'x', parent=node, move=move)
             node.add_child(expansion_node)
 
 
@@ -294,6 +294,7 @@ class MonteCarloPlayer(Player):
             moves = game_rules.getLegalMoves(state, player)
 
         # if we lose, value = -1, otherwise 1
+        print(player)
         if player == self.symbol:
             return -1
         else:
