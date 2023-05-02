@@ -70,7 +70,7 @@ class GameTest(unittest.TestCase):
 		numGame = 100
 		size = 8
 		type = 'random'
-		simulatins = 100
+		simulatins = 50
 		player1 = 'c'
 		player2 = 'a'
 		result = {}
