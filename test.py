@@ -36,12 +36,12 @@ class GameTest(unittest.TestCase):
 		signal.signal(signal.SIGALRM, gm.interrupt)
 		return gm
 
-<<<<<<< HEAD
+
 	def test1(self):
 		total = 0
 		print("Testing ...")
 		for i in range(100):
-			gm = self.makeGame(8, 'c', 'a', number_of_simulations=10, depth=3, simulation_type="random", c_value=1, sdepth=3)
+			gm = self.makeGame(8, 'c', 'r', number_of_simulations=100, depth=3, simulation_type="random", c_value=2.5, sdepth=3)
 			gm.play(PB=False)
 			if gm.GetWinner() == "X":
 				total += 1
@@ -49,20 +49,8 @@ class GameTest(unittest.TestCase):
 			print("total: " + str(i+1) + " " + str(total) + "WINS")
 		print("total: " + str(total) + " " + str(total) + "WINS")
 		self.assertTrue(True)
-=======
-	# def test1(self):
-	# 	total = 0
-	# 	print("Testing ...")
-	# 	for i in range(100):
-	# 		gm = self.makeGame(8, 'c', 'a', number_of_simulations=100, depth=3, simulation_type="random", c_value=0.7, sdepth=3)
-	# 		gm.play(PB=False)
-	# 		if gm.GetWinner() == "X":
-	# 			total += 1
-	# 		print(gm.GetWinner())
-	# 		print("total: " + str(i+1) + " " + str(total) + "WINS")
-	# 	print("total: " + str(total) + " " + str(total) + "WINS")
-	# 	self.assertTrue(True)
->>>>>>> 23ce8b6dab2845bcfb8d9b5bdae6143c00eaae7f
+
+
 
 
 	def test2(self):

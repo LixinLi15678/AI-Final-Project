@@ -251,7 +251,7 @@ class MonteCarloPlayer(Player):
             symbol (str): The symbol to simulate with.
 
         Returns:
-            int: The result of the simulation. 1 if the player won, -1 if the player lost.
+            int: The result of the simulation. 1 if the player won, 0 if the player lost.
         """
         state = board
         player = symbol
@@ -265,7 +265,7 @@ class MonteCarloPlayer(Player):
             moves = game_rules.getLegalMoves(state, player)
 
         # if we lose, value = -1, otherwise 1
-        return -1 if player == self.symbol else 1
+        return 0 if player == self.symbol else 1
 
     def alphabeta_simulation(self, board: list, symbol: str) -> int:
         """Simulates a game using the alpha-beta pruning algorithm and returns the result.
@@ -275,7 +275,7 @@ class MonteCarloPlayer(Player):
             symbol (str): The symbol to simulate with.
 
         Returns:
-            int: The result of the simulation. 1 if the player won, -1 if the player lost.
+            int: The result of the simulation. 1 if the player won, 0 if the player lost.
         """
         state = board
         player = symbol
@@ -284,13 +284,12 @@ class MonteCarloPlayer(Player):
         while moves:
             move = self.alphabeta_getmove(state, player, depth)
             state = game_rules.makeMove(state, move)
-            print(player)
             new_player = 'o' if player == 'x' else 'x'
             player = new_player
             moves = game_rules.getLegalMoves(state, player)
 
         # if we lose, value = -1, otherwise 1
-        return -1 if player == self.symbol else 1
+        return 0 if player == self.symbol else 1
 
     def alphabeta_getmove(self, board, player, depth) -> tuple:
         if depth == 0:
