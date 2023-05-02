@@ -3,6 +3,7 @@ import math
 import game_manager, game_rules, signal, unittest
 from player import makePlayer
 import json
+import numpy as np
 
 class GameTest(unittest.TestCase):
 	def makeGame(self, size, player1, player2, depth=5, number_of_simulations=50, simulation_type='random', c_value=1.414, script=None, sdepth=5) -> game_manager.GameManager:
@@ -62,13 +63,13 @@ class GameTest(unittest.TestCase):
 			num = temp['num']
 		print("History loaded")
 
-		cList = [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
-		numGame = 10
+		cList = [round(x, 2) for x in list(np.arange(0.5, 1.01, 0.02))]
+		numGame = 100
 		size = 8
 		type = 'random'
-		simulatins = 1000
+		simulatins = 100
 		player1 = 'c'
-		player2 = 'r'
+		player2 = 'a'
 		result = {}
 		write = {}
 		depth = 3
