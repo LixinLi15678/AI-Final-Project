@@ -40,11 +40,11 @@ class GameTest(unittest.TestCase):
 		total = 0
 		print("Testing ...")
 		for i in range(100):
-			gm = self.makeGame(8, 'c', 'a', number_of_simulations=100, depth=3, simulation_type="random", c_value=0.7, sdepth=3)
+			gm = self.makeGame(8, 'c', 'a', number_of_simulations=10, depth=3, simulation_type="random", c_value=1, sdepth=3)
 			gm.play(PB=False)
 			if gm.GetWinner() == "X":
 				total += 1
-			print(gm.GetWinner())
+			# print(gm.GetWinner())
 			print("total: " + str(i+1) + " " + str(total) + "WINS")
 		print("total: " + str(total) + " " + str(total) + "WINS")
 		self.assertTrue(True)
