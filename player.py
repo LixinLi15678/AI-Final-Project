@@ -143,7 +143,7 @@ class MonteCarloPlayer(Player):
         self.sdepth = sdepth
         self.make_graph = make_graph
         self.index = 0
-        self.tree = nx.DiGraph()
+        self.tree = None
         self.edges = []
         self.actions = []
         self.labels = {}
@@ -221,12 +221,24 @@ class MonteCarloPlayer(Player):
 
     def draw_graph(self):
         print("Starting draw graph")
+        self.tree = nx.DiGraph()
         file_name = "process/MCTS Process " + str(self.index) + ".gif"
         self.fig, self.ax = plt.subplots(figsize=(26, 13))
         plt.close()
         ani = animation.FuncAnimation(self.fig, self.update, frames=len(self.actions), interval=1000, repeat=False)
         ani.save(file_name, writer='pillow', fps=1)
         print("end draw")
+        self.fig = None
+        self.ax = None
+
+    def forward_propagation_update_graph(self, root:Node):
+        queue = [root]
+
+        while queue:
+            cur_node = queue.pop(0)
+            for child in cur_node.children:
+                self.update_graph_nodes(child)
+                queue.append(child)
 
     def getMove(self, board: list) -> tuple:
         """This function is to get the next move of the player.
@@ -241,6 +253,10 @@ class MonteCarloPlayer(Player):
         # get root node and expand it first
         root_node = Node(state=board.copy(), c=self.c, player=self.symbol)
 
+        self.edges = []
+        self.actions = []
+        self.labels = {}
+
         # add root node in the graph
         if self.make_graph:
             self.add_graph_node(root_node)
@@ -248,6 +264,12 @@ class MonteCarloPlayer(Player):
 
         root_moves = game_rules.getLegalMoves(board, self.symbol)
         self.expand(root_node, root_moves)
+
+        if len(root_moves) == 1:
+            if self.make_graph:
+                self.add_graph_nodes_with_edges(root_node)
+                self.draw_graph()
+            return root_moves[0]
 
         # add edges in the graph for root node
         if self.make_graph:
@@ -290,6 +312,7 @@ class MonteCarloPlayer(Player):
             # delete the temp simulation node after update
             if self.make_graph:
                 self.delete_graph_node(temp_node)
+                self.forward_propagation_update_graph(root_node)
 
         if self.make_graph:
             self.draw_graph()
