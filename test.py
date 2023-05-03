@@ -6,7 +6,7 @@ import json
 import numpy as np
 
 class GameTest(unittest.TestCase):
-	def makeGame(self, size, player1, player2, depth=5, number_of_simulations=50, simulation_type='random', c_value=1.414, script=None, sdepth=5) -> game_manager.GameManager:
+	def makeGame(self, size, player1, player2, depth=5, number_of_simulations=50, simulation_type='random', c_value=1.414, script=None, sdepth=5, make_graph = False) -> game_manager.GameManager:
 		"""Make a game with the given parameters.
 
 		Args:
@@ -26,8 +26,8 @@ class GameTest(unittest.TestCase):
 		gm = game_manager.GameManager(
 		      size
 		    , size
-		    , makePlayer(player1, 'x', depth, number_of_simulations, c_value, simulation_type, sdepth)
-		    , makePlayer(player2, 'o', depth, number_of_simulations, c_value, simulation_type, sdepth)
+		    , makePlayer(player1, 'x', depth, number_of_simulations, c_value, simulation_type, sdepth, make_graph)
+		    , makePlayer(player2, 'o', depth, number_of_simulations, c_value, simulation_type, sdepth, make_graph)
 		    , script
 		    , True)
 		signal.signal(signal.SIGABRT, gm.interrupt)
@@ -37,18 +37,18 @@ class GameTest(unittest.TestCase):
 		return gm
 
 
-	# def test1(self):
-	# 	total = 0
-	# 	print("Testing ...")
-	# 	for i in range(100):
-	# 		gm = self.makeGame(8, 'c', 'r', number_of_simulations=100, depth=3, simulation_type="random", c_value=2.5, sdepth=3)
-	# 		gm.play(PB=False)
-	# 		if gm.GetWinner() == "X":
-	# 			total += 1
-	# 		# print(gm.GetWinner())
-	# 		print("total: " + str(i+1) + " " + str(total) + "WINS")
-	# 	print("total: " + str(total) + " " + str(total) + "WINS")
-	# 	self.assertTrue(True)
+	def test1(self):
+		total = 0
+		print("Testing ...")
+		for i in range(100):
+			gm = self.makeGame(8, 'c', 'r', number_of_simulations=100, depth=3, simulation_type="random", c_value=2.5, sdepth=3, make_graph=True)
+			gm.play(PB=False)
+			if gm.GetWinner() == "X":
+				total += 1
+			# print(gm.GetWinner())
+			print("total: " + str(i+1) + " " + str(total) + "WINS")
+		print("total: " + str(total) + " " + str(total) + "WINS")
+		self.assertTrue(True)
 
 	def test2(self):
 		"""
@@ -108,6 +108,14 @@ class GameTest(unittest.TestCase):
 		print("Done!")
 		print(result)
 		self.assertTrue(True)
+
+	def test3(self):
+		print("Testing ...")
+		gm = self.makeGame(8, 'c', 'r', number_of_simulations=10, depth=3, simulation_type="random", c_value=2.5, sdepth=3, make_graph=True)
+		gm.play(PB=False)
+		print(gm.GetWinner())
+		self.assertTrue(True)
+
 
 	# def test4(self):
 	# 	# alphabeta vs mc

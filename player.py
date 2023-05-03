@@ -5,6 +5,10 @@ from tqdm import tqdm
 import game_manager
 import game_rules
 import random
+import networkx as nx
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+import textwrap
 
 ###########################################################################
 # Explanation of the types:
@@ -33,6 +37,7 @@ class Player(object):
     def h1(self, board, symbol):
         return -len(game_rules.getLegalMoves(board, 'o' if self.symbol == 'x' else 'x'))
 
+
 # This class has been replaced with the code for a deterministic player.
 class AlphaBetaPlayer(Player):
     def __init__(self, symbol, depth):
@@ -41,6 +46,7 @@ class AlphaBetaPlayer(Player):
 
     # Leave these two functions alone.
     def selectInitialX(self, board): return (0,0)
+
     def selectInitialO(self, board):
         validMoves = game_rules.getFirstMovesForO(board)
         return list(validMoves)[0]
@@ -96,6 +102,7 @@ class AlphaBetaPlayer(Player):
                 b = min(b, bestMove[0])
         return bestMove
 
+
 class Node:
     def __init__(self, state, c, player, parent=None, move=None):
         self.c_param = c
@@ -121,24 +128,105 @@ class Node:
         self.value += value
 
     def ucb1(self):
-        if self.visits == 0:
+        if self.visits == 0 or self.parent is None or self.parent.visits == 0:
             return POS_INF
         return self.value / self.visits + self.c_param * math.sqrt(2 * math.log(self.parent.visits) / self.visits)
 
+
 class MonteCarloPlayer(Player):
-    def __init__(self, symbol: str, number_of_simulations: int, c: float, simulation_type: str, sdepth: int):
+    def __init__(self, symbol: str, number_of_simulations: int, c: float, simulation_type: str, sdepth: int, make_graph:bool):
         super(MonteCarloPlayer, self).__init__(symbol)
         self.number_of_simulations = number_of_simulations
         self.c = c
         self.simulation_type = simulation_type
         self.simulation_count = 0
         self.sdepth = sdepth
+        self.make_graph = make_graph
+        self.index = 0
+        self.tree = nx.DiGraph()
+        self.edges = []
+        self.actions = []
+        self.labels = {}
+        self.fig = None
+        self.ax = None
 
     def selectInitialX(self, board: list) -> tuple:
         return (0, 0)
     def selectInitialO(self, board: list) -> tuple:
         validMoves = game_rules.getFirstMovesForO(board)
         return list(validMoves)[0]
+
+    # convert board to string displayed in the graph
+    def board_to_graph_string(self, board):
+        a = ""
+        for row in board:
+            for c in row:
+                if c == ' ':
+                    a += "   "
+                else:
+                    a += c + " "
+            a = a[:-1] + "\n"
+        a = a[:-1]
+        return a
+
+    def add_graph_node(self, node):
+        # add labels for new node and append actions
+        self.labels[node] = [self.board_to_graph_string(node.state), "Val: " + str(node.value), "Visits: " + str(node.visits), "Ucb: " + str(round(node.ucb1(), 2)), "Player: " + str(node.player)]
+        self.actions.append(("add_node", node))
+
+    def add_graph_nodes_with_edges(self, node):
+        # add edges for each child for the parent node
+        for child in node.children:
+            self.add_graph_node(child)
+            self.actions.append(("add_edge", (node, child)))
+
+    def update_graph_nodes(self, node):
+        # update node in labels
+        self.actions.append(("update", (node, [self.board_to_graph_string(node.state), "Val: " + str(node.value), "Visits: " + str(node.visits), "Ucb: " + str(round(node.ucb1(), 2)), "Player: " + str(node.player)])))
+
+    def delete_graph_node(self, node):
+        self.actions.append(("del", node))
+
+
+    def update(self, move):
+        action, item = self.actions[move]
+        self.ax.clear()
+
+        if action == "add_node":
+            self.tree.add_node(item)
+        elif action == "add_edge":
+            self.tree.add_edge(*item)
+        elif action == "del":
+            self.tree.remove_node(item)
+        elif action == "update":
+            node, new_labels = item
+            self.labels[node] = new_labels
+
+
+        pos = nx.drawing.nx_agraph.graphviz_layout(self.tree, prog='dot')
+        nx.draw(self.tree, pos, with_labels=False, node_color='lightblue', node_size=2000, arrowsize=20, ax=self.ax)
+
+
+        for node, (x, y) in pos.items():
+            if node in self.labels:
+                for i, label in enumerate(self.labels[node]):
+                    # when i==0, the board size is very big, so adjust offset
+                    if i > 1:
+                        offset = 30 + i * 20
+                    else:
+                        offset = -40 + i * 90
+
+                    self.ax.annotate(label, xy=(x, y), xytext=(5, offset), textcoords='offset points', fontweight='bold',
+                                fontsize=10)
+
+    def draw_graph(self):
+        print("Starting draw graph")
+        file_name = "process/MCTS Process " + str(self.index) + ".gif"
+        self.fig, self.ax = plt.subplots(figsize=(26, 13))
+        plt.close()
+        ani = animation.FuncAnimation(self.fig, self.update, frames=len(self.actions), interval=1000, repeat=False)
+        ani.save(file_name, writer='pillow', fps=1)
+        print("end draw")
 
     def getMove(self, board: list) -> tuple:
         """This function is to get the next move of the player.
@@ -149,10 +237,21 @@ class MonteCarloPlayer(Player):
         Returns:
             tuple: The next move of the player.
         """
+
         # get root node and expand it first
         root_node = Node(state=board.copy(), c=self.c, player=self.symbol)
+
+        # add root node in the graph
+        if self.make_graph:
+            self.add_graph_node(root_node)
+            self.index += 1
+
         root_moves = game_rules.getLegalMoves(board, self.symbol)
         self.expand(root_node, root_moves)
+
+        # add edges in the graph for root node
+        if self.make_graph:
+            self.add_graph_nodes_with_edges(root_node)
 
         for i in range(self.number_of_simulations):
             node = root_node
@@ -165,14 +264,35 @@ class MonteCarloPlayer(Player):
             # if this leaf is the end of the game, which means it has no child, then we just choose this node
             if node.visits != 0:
                 self.expand(node, game_rules.getLegalMoves(node.state, self.symbol))
+
+                if self.make_graph:
+                    self.add_graph_nodes_with_edges(node)
+
                 node = node.children[0] if len(node.children) != 0 else node
 
-            value = self.run_simulation(node)
+            value, simulation_state, simulation_player = self.run_simulation(node)
+
+            temp_node = None
+            if self.make_graph:
+                # append a temp simulation node in the graph
+                temp_node = Node(simulation_state, self.c, player = simulation_player)
+                self.add_graph_node(temp_node)
+                self.actions.append(("add_edge", (node, temp_node)))
+
+
             # backpropagation
             while node is not None:
                 node.update(value)
+                if self.make_graph:
+                    self.update_graph_nodes(node)
                 node = node.parent
 
+            # delete the temp simulation node after update
+            if self.make_graph:
+                self.delete_graph_node(temp_node)
+
+        if self.make_graph:
+            self.draw_graph()
         return self.select(root_node).move
 
     def select(self, node):
@@ -206,8 +326,7 @@ class MonteCarloPlayer(Player):
             expansion_node = Node(new_board, self.c, player='o' if node.player == 'x' else 'x', parent=node, move=move)
             node.add_child(expansion_node)
 
-
-    def run_simulation(self, node: Node) -> int:
+    def run_simulation(self, node: Node) -> list:
         """ Runs a simulation from the given node and returns the result.
 
         Args:
@@ -222,7 +341,7 @@ class MonteCarloPlayer(Player):
         player = node.player
         return self.simulate(state, player)
 
-    def simulate(self, board: list, symbol: str) -> int:
+    def simulate(self, board: list, symbol: str) -> list:
         """ Calls the appropriate simulation function based on the simulation type.
 
         Args:
@@ -243,7 +362,7 @@ class MonteCarloPlayer(Player):
             raise ValueError(f"Invalid simulation type: {self.simulation_type}")
 
 
-    def random_simulation(self, board: list, symbol: str) -> int:
+    def random_simulation(self, board: list, symbol: str) -> list:
         """Simulates a game using random moves and returns the result.
 
         Args:
@@ -265,9 +384,9 @@ class MonteCarloPlayer(Player):
             moves = game_rules.getLegalMoves(state, player)
 
         # if we lose, value = -1, otherwise 1
-        return 0 if player == self.symbol else 1
+        return [0 if player == self.symbol else 1, state, player]
 
-    def alphabeta_simulation(self, board: list, symbol: str) -> int:
+    def alphabeta_simulation(self, board: list, symbol: str) -> list:
         """Simulates a game using the alpha-beta pruning algorithm and returns the result.
 
         Args:
@@ -289,7 +408,7 @@ class MonteCarloPlayer(Player):
             moves = game_rules.getLegalMoves(state, player)
 
         # if we lose, value = -1, otherwise 1
-        return 0 if player == self.symbol else 1
+        return [0 if player == self.symbol else 1, state, player]
 
     def alphabeta_getmove(self, board, player, depth) -> tuple:
         if depth == 0:
@@ -386,13 +505,13 @@ class NotImplementedException:
     def __init__(self, message): self.message = message
     def __str__(self): return self.message
 
-def makePlayer(playerType, symbol, depth, numSimulate, cValue, sType, sdepth):
+def makePlayer(playerType, symbol, depth, numSimulate, cValue, sType, sdepth, make_graph):
     player = playerType[0].lower()
     if player   == 'h': return HumanPlayer(symbol)
     elif player == 'r': return RandomPlayer(symbol)
     elif player == 'a': return AlphaBetaPlayer(symbol, depth)
     elif player == 'd': return DeterministicPlayer(symbol)
-    elif player == 'c': return MonteCarloPlayer(symbol, numSimulate, cValue, sType, sdepth)
+    elif player == 'c': return MonteCarloPlayer(symbol, numSimulate, cValue, sType, sdepth, make_graph)
     else: raise NotImplementedException('Unrecognized player type {}'.format(playerType))
 
 def callMoveFunction(player, board):
