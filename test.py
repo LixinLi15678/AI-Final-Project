@@ -72,7 +72,7 @@ class GameTest(unittest.TestCase):
 		type = 'random'
 		simulatins = 50
 		player1 = 'c'
-		player2 = 'a'
+		player2 = 'r'
 		result = {}
 		write = {}
 		depth = 3
