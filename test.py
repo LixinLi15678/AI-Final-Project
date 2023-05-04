@@ -63,13 +63,13 @@ class GameTest(unittest.TestCase):
 			num = temp['num']
 		print("History loaded")
 
-		cList = [1.0]
+		cList = [round(x, 2) for x in list(np.arange(0, 0.401, 0.05))]
 		numGame = 100
 		size = 8
 		type = 'random'
 		simulatins = 100
 		player1 = 'c'
-		player2 = 'r'
+		player2 = 'a'
 		result = {}
 		write = {}
 		depth = 3
