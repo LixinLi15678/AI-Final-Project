@@ -41,7 +41,7 @@ class GameTest(unittest.TestCase):
 		total = 0
 		print("Testing ...")
 		for i in range(100):
-			gm = self.makeGame(8, 'c', 'r', number_of_simulations=100, depth=3, simulation_type="random", c_value=2.5, sdepth=3, make_graph=True)
+			gm = self.makeGame(8, 'c', 'r', number_of_simulations=100, depth=3, simulation_type="random", c_value=0, sdepth=3, make_graph=False)
 			gm.play(PB=False)
 			if gm.GetWinner() == "X":
 				total += 1

@@ -123,14 +123,19 @@ class Node:
     def add_child(self, child):
         self.children.append(child)
 
-    def update(self, value):
+    def update(self, loser):
         self.visits += 1
-        self.value += value
+        # 1 point earned if the loser = node.player, node.player is used for getLegalMove
+        # so, you can think in the way that 1 point eared if loser != node.parent.player
+        if loser == self.player:
+            self.value += 1
+        else:
+            self.value -= 1
 
     def ucb1(self):
         if self.visits == 0 or self.parent is None or self.parent.visits == 0:
             return POS_INF
-        return self.value / self.visits + self.c_param * math.sqrt(2 * math.log(self.parent.visits) / self.visits)
+        return self.value / self.visits + self.c_param * math.sqrt(math.log(self.parent.visits) / self.visits)
 
 
 class MonteCarloPlayer(Player):
@@ -223,7 +228,7 @@ class MonteCarloPlayer(Player):
         print("Starting draw graph")
         self.tree = nx.DiGraph()
         file_name = "process/MCTS Process " + str(self.index) + ".gif"
-        self.fig, self.ax = plt.subplots(figsize=(26, 13))
+        self.fig, self.ax = plt.subplots(figsize=(40, 20))
         plt.close()
         ani = animation.FuncAnimation(self.fig, self.update, frames=len(self.actions), interval=1000, repeat=False)
         ani.save(file_name, writer='pillow', fps=1)
@@ -285,26 +290,26 @@ class MonteCarloPlayer(Player):
             # if this leaf have already been visited, then we expand it and choose the first child
             # if this leaf is the end of the game, which means it has no child, then we just choose this node
             if node.visits != 0:
-                self.expand(node, game_rules.getLegalMoves(node.state, self.symbol))
+                self.expand(node, game_rules.getLegalMoves(node.state, node.player))
 
                 if self.make_graph:
                     self.add_graph_nodes_with_edges(node)
 
                 node = node.children[0] if len(node.children) != 0 else node
 
-            value, simulation_state, simulation_player = self.run_simulation(node)
+            simulation_state, simulation_loser = self.run_simulation(node)
 
             temp_node = None
             if self.make_graph:
                 # append a temp simulation node in the graph
-                temp_node = Node(simulation_state, self.c, player = simulation_player)
+                temp_node = Node(simulation_state, self.c, player = simulation_loser)
                 self.add_graph_node(temp_node)
                 self.actions.append(("add_edge", (node, temp_node)))
 
 
             # backpropagation
             while node is not None:
-                node.update(value)
+                node.update(simulation_loser)
                 if self.make_graph:
                     self.update_graph_nodes(node)
                 node = node.parent
@@ -357,7 +362,6 @@ class MonteCarloPlayer(Player):
 
         Returns:
             int: The result of the simulation. 1 if the player won, 0 if the player lost,
-                 and 0.5 if the game was a draw.
         """
         self.simulation_count += 1
         state = node.state
@@ -407,7 +411,7 @@ class MonteCarloPlayer(Player):
             moves = game_rules.getLegalMoves(state, player)
 
         # if we lose, value = -1, otherwise 1
-        return [0 if player == self.symbol else 1, state, player]
+        return [state, player]
 
     def alphabeta_simulation(self, board: list, symbol: str) -> list:
         """Simulates a game using the alpha-beta pruning algorithm and returns the result.
@@ -431,7 +435,7 @@ class MonteCarloPlayer(Player):
             moves = game_rules.getLegalMoves(state, player)
 
         # if we lose, value = -1, otherwise 1
-        return [0 if player == self.symbol else 1, state, player]
+        return [state, player]
 
     def alphabeta_getmove(self, board, player, depth) -> tuple:
         if depth == 0:
