@@ -228,7 +228,7 @@ class MonteCarloPlayer(Player):
         print("Starting draw graph")
         self.tree = nx.DiGraph()
         file_name = "process/MCTS Process " + str(self.index) + ".gif"
-        self.fig, self.ax = plt.subplots(figsize=(40, 20))
+        self.fig, self.ax = plt.subplots(figsize=(50, 25))
         plt.close()
         ani = animation.FuncAnimation(self.fig, self.update, frames=len(self.actions), interval=1000, repeat=False)
         ani.save(file_name, writer='pillow', fps=1)
