@@ -64,12 +64,12 @@ class GameTest(unittest.TestCase):
 		print("History loaded")
 
 		cList = [1.0]
-		numGame = 50
+		numGame = 100
 		size = 8
-		type = 'alphabeta'
-		simulatins = 10
+		type = 'random'
+		simulatins = 100
 		player1 = 'c'
-		player2 = 'a'
+		player2 = 'r'
 		result = {}
 		write = {}
 		depth = 3
