@@ -479,7 +479,7 @@ class MonteCarloPlayer(Player):
             for move in legalMoves:
                 new_board = game_rules.makeMove(board, move)
                 tmp = self.alpha_beta_max_value(new_board, alpha, beta, d+1, player, depth)
-                v = tmp if tmp is not None else self.h1(new_board, 'o' if player == 'x' else 'x')
+                v = tmp if tmp is not None else self.h1(new_board, player)
                 min_v = min(min_v, v)
                 beta = min(min_v, beta)
                 if beta <= alpha:
