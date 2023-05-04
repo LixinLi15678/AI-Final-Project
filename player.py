@@ -129,8 +129,6 @@ class Node:
         # so, you can think in the way that 1 point eared if loser != node.parent.player
         if loser == self.player:
             self.value += 1
-        else:
-            self.value -= 1
 
     def ucb1(self):
         if self.visits == 0 or self.parent is None or self.parent.visits == 0:
@@ -361,7 +359,7 @@ class MonteCarloPlayer(Player):
             node (Node): The node to start the simulation from.
 
         Returns:
-            int: The result of the simulation. 1 if the player won, 0 if the player lost,
+            [list: final board, char: loser symbol]
         """
         self.simulation_count += 1
         state = node.state
@@ -376,8 +374,7 @@ class MonteCarloPlayer(Player):
             symbol (str): The symbol to simulate with.
 
         Returns:
-            int: The result of the simulation. 1 if the player won, 0 if the player lost,
-                    and 0.5 if the game was a draw.
+            [list: final board, char: loser symbol]
         """
         if self.simulation_type == "random":
             return self.random_simulation(board, symbol)
@@ -397,7 +394,7 @@ class MonteCarloPlayer(Player):
             symbol (str): The symbol to simulate with.
 
         Returns:
-            int: The result of the simulation. 1 if the player won, 0 if the player lost.
+            [list: final board, char: loser symbol]
         """
         state = board
         player = symbol
@@ -421,7 +418,7 @@ class MonteCarloPlayer(Player):
             symbol (str): The symbol to simulate with.
 
         Returns:
-            int: The result of the simulation. 1 if the player won, 0 if the player lost.
+            [list: final board, char: loser symbol]
         """
         state = board
         player = symbol
