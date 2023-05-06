@@ -37,18 +37,18 @@ class GameTest(unittest.TestCase):
 		return gm
 
 
-	# def test1(self):
-	# 	total = 0
-	# 	print("Testing ...")
-	# 	for i in range(100):
-	# 		gm = self.makeGame(8, 'c', 'r', number_of_simulations=100, depth=3, simulation_type="random", c_value=0, sdepth=3, make_graph=False)
-	# 		gm.play(PB=False)
-	# 		if gm.GetWinner() == "X":
-	# 			total += 1
-	# 		# print(gm.GetWinner())
-	# 		print("total: " + str(i+1) + " " + str(total) + "WINS")
-	# 	print("total: " + str(total) + " " + str(total) + "WINS")
-	# 	self.assertTrue(True)
+	def test1(self):
+		total = 0
+		print("Testing ...")
+		for i in range(100):
+			gm = self.makeGame(8, 'c', 'r', number_of_simulations=100, depth=3, simulation_type="random", c_value=0, sdepth=3, make_graph=False)
+			gm.play(PB=False)
+			if gm.GetWinner() == "X":
+				total += 1
+			# print(gm.GetWinner())
+			print("total: " + str(i+1) + " " + str(total) + "WINS")
+		print("total: " + str(total) + " " + str(total) + "WINS")
+		self.assertTrue(True)
 
 	def test2(self):
 		"""
@@ -117,37 +117,6 @@ class GameTest(unittest.TestCase):
 		self.assertTrue(True)
 
 
-	# def test4(self):
-	# 	# alphabeta vs mc
-	# 	p1 = 'c'
-	# 	p2 = 'a'
-	# 	depth = 3
-	# 	total = 0
-	# 	for i in range(10):
-	# 		print(f"Game {i+1}:")
-	# 		gm = self.makeGame(8, p1, p2, depth, timeLimit=15.0, simulation_type='alphabeta', c_value=math.sqrt(5))
-	# 		gm.play(PB=False)
-	# 		if gm.GetWinner() == "X" or "x":
-	# 			total += 1
-	# 		print(f"{gm.GetWinner()} wins")
-	# 	print(total, "WINS")
-	# 	self.assertTrue(True)
-	#
-	# def test5(self):
-	# 	# alphabeta vs mc
-	# 	p1 = 'c'
-	# 	p2 = 'a'
-	# 	depth = 3
-	# 	total = 0
-	# 	for i in range(10):
-	# 		print(f"Game {i+1}:")
-	# 		gm = self.makeGame(8, p1, p2, depth, timeLimit=15.0, simulation_type='random', c_value=math.sqrt(5))
-	# 		gm.play(PB=False)
-	# 		if gm.GetWinner() == "X" or "x":
-	# 			total += 1
-	# 		print(f"{gm.GetWinner()} wins")
-	# 	print(total, "WINS")
-	# 	self.assertTrue(True)
 
 if __name__ == "__main__":
 	unittest.main()
