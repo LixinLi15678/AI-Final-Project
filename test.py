@@ -109,12 +109,12 @@ class GameTest(unittest.TestCase):
 		print(result)
 		self.assertTrue(True)
 
-	# def test3(self):
-	# 	print("Testing ...")
-	# 	gm = self.makeGame(8, 'c', 'r', number_of_simulations=20, depth=3, simulation_type="random", c_value=2.5, sdepth=3, make_graph=True)
-	# 	gm.play(PB=False)
-	# 	print(gm.GetWinner())
-	# 	self.assertTrue(True)
+	def test3(self):
+		print("Testing ...")
+		gm = self.makeGame(8, 'c', 'r', number_of_simulations=20, depth=3, simulation_type="random", c_value=2.5, sdepth=3, make_graph=True)
+		gm.play(PB=False)
+		print(gm.GetWinner())
+		self.assertTrue(True)
 
 
 	# def test4(self):
